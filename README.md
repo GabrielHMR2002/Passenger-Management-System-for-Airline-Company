@@ -1,5 +1,7 @@
 # Sistema-de-Gerenciamento-de-Passageiros-para-Empresa-Aérea
 
+# Linguagem utilizada: C
+
 # Documentação do Projeto: Sistema de Gerenciamento de Passageiros para Empresa Aérea - Queda Livre
 
 ## Visão Geral
