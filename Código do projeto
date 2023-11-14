@@ -1,0 +1,603 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PASSAGEIROS 10
+#define MAX_FILA_ESPERA 5
+
+typedef struct
+{
+    char cpf[12];
+    char nome[50];
+    char endereco[100];
+    char telefone[15];
+    int numPassagem;
+    int numPoltrona;
+} Passageiro;
+
+void exibirOpcoesVoo()
+{
+    printf("Escolha uma opcao de voo:\n");
+    printf("1. BH-RIO\n");
+    printf("2. BH-SP\n");
+    printf("3. BH-BRASILIA\n");
+    printf("Opcao: ");
+}
+
+void exibirMenuVoo(const char *nomeVoo)
+{
+    printf("\n----- Empresa Aerea Queda Livre - Voo %s -----\n", nomeVoo);
+    printf("MENU DE OPCOES\n");
+    printf("[1] Mostrar Lista de Passageiros\n");
+    printf("[2] Pesquisar Passageiro por CPF\n");
+    printf("[3] Pesquisar Passageiro por Nome\n");
+    printf("[4] Cadastrar Passageiro\n");
+    printf("[5] Excluir Passageiro da Lista\n");
+    printf("[6] Mostrar Fila de Espera\n");
+    printf("[9] Sair\n");
+    printf("Digite sua opcao: ");
+}
+
+void mostrarListaPassageiros(const char *nomeVoo, int opcaoVoo)
+{
+    char nomeArquivo[20];
+    sprintf(nomeArquivo, "%s.txt", nomeVoo);
+
+    FILE *arquivo = fopen(nomeArquivo, "r");
+    if (arquivo == NULL)
+    {
+        printf("Voo nao existe.\n");
+        return;
+    }
+
+    char linha[200];
+
+    printf("\n----- Lista de Passageiros do Voo %s -----\n", nomeVoo);
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL)
+    {
+        printf("\n\nCPF: %s\n", strtok(linha, ";"));
+        printf("Nome: %s\n", strtok(NULL, ";"));
+        printf("Endereco: %s\n", strtok(NULL, ";"));
+        printf("Telefone: %s\n", strtok(NULL, ";"));
+        printf("Numero da Passagem: %s\n", strtok(NULL, ";"));
+        printf("Numero da Poltrona: %s\n", strtok(NULL, ";"));
+        printf("Numero voo: %d\n", opcaoVoo);
+        if (opcaoVoo == 1)
+        {
+            printf("Horario: 12:00");
+        }
+        else if (opcaoVoo == 2)
+        {
+            printf("Horario: 16:00");
+        }
+        else
+        {
+            printf("Horario: 20:00");
+        }
+
+        printf("\n-------------------------\n");
+    }
+
+    fclose(arquivo);
+}
+
+int _pesquisarTermoEmArquivo(const char *nomeDoArquivo, const char *termo, int posTermo)
+{
+    FILE *arquivo = fopen(nomeDoArquivo, "r");
+    if (arquivo == NULL)
+    {
+        return -1;
+    }
+
+    int encontrado = 0;
+    char linha[200];
+    char *token;
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL)
+    {
+        char linhaCopiada[200]; 
+
+        strcpy(linhaCopiada, linha);
+
+        if (posTermo == 0)
+            token = strtok(linhaCopiada, ";");
+        else
+        {
+            strtok(linhaCopiada, ";");
+            for (int i = 1; i < posTermo; i++)
+                strtok(NULL, ";");
+            token = strtok(NULL, ";");
+        }
+
+        char termoNoArq[80];
+
+        strcpy(termoNoArq, token); // Armazena o termo
+
+        if (strcmp(termoNoArq, termo) == 0) // Compara com o termo fornecido
+        {
+            encontrado = 1;
+            printf("\n----- Passageiro encontrado -----\n");
+            printf("CPF: %s\n", strtok(linha, ";"));
+            printf("Nome: %s\n", strtok(NULL, ";"));
+            printf("Endereco: %s\n", strtok(NULL, ";"));
+            printf("Telefone: %s\n", strtok(NULL, ";"));
+            printf("Numero da Passagem: %s\n", strtok(NULL, ";"));
+            printf("Numero da Poltrona: %s\n", strtok(NULL, ";"));
+            break;
+        }
+    }
+
+    fclose(arquivo);
+    return encontrado;
+}
+
+
+void pesquisarPassageiroCPF(const char *nomeVoo, const char *cpf)
+{
+    char nomeArquivo[20];
+    sprintf(nomeArquivo, "%s.txt", nomeVoo);
+    int encontrado = 0;
+
+    encontrado = _pesquisarTermoEmArquivo(nomeArquivo, cpf, 0);
+
+    if (encontrado == -1)
+    {
+        printf("O voo nao existe");
+        return;
+    }
+
+    if (encontrado == 0)
+    {
+        sprintf(nomeArquivo, "fila_%s.txt", nomeVoo);
+        encontrado = _pesquisarTermoEmArquivo(nomeArquivo, cpf, 0);
+    }
+
+    if (encontrado != 1)
+    {
+        printf("Passageiro nao consta neste voo.\n");
+    }
+}
+
+void pesquisarPassageiroNome(const char *nomeVoo, const char *nome)
+{
+    char nomeArquivo[20];
+    sprintf(nomeArquivo, "%s.txt", nomeVoo);
+    int encontrado = 0;
+
+    encontrado = _pesquisarTermoEmArquivo(nomeArquivo, nome, 1);
+
+    if (encontrado == -1)
+    {
+        printf("O voo nao existe");
+        return;
+    }
+
+    if (encontrado == 0)
+    {
+        sprintf(nomeArquivo, "fila_%s.txt", nomeVoo);
+        encontrado = _pesquisarTermoEmArquivo(nomeArquivo, nome, 1);
+    }
+
+    if (encontrado != 1)
+    {
+        printf("Passageiro nao consta neste voo.\n");
+    }
+}
+
+int verificarEspacoPassageiros(const char *nomeVoo)
+{
+    char nomeArquivo[20];
+    sprintf(nomeArquivo, "%s.txt", nomeVoo);
+
+    FILE *arquivo = fopen(nomeArquivo, "r");
+    if (arquivo == NULL)
+    {
+        printf("Voo nao existe.\n");
+        return 0;
+    }
+
+    char linha[200];
+    int totalPassageiros = 0;
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL)
+    {
+        totalPassageiros++;
+    }
+
+    fclose(arquivo);
+
+    if (totalPassageiros >= MAX_PASSAGEIROS)
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+int verificarEspacoFilaEspera(const char *nomeVoo)
+{
+    char nomeArquivo[20];
+    sprintf(nomeArquivo, "fila_%s.txt", nomeVoo);
+
+    FILE *arquivo = fopen(nomeArquivo, "r");
+    if (arquivo == NULL)
+    {
+        return 1;
+    }
+
+    char linha[200];
+    int totalPassageiros = 0;
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL)
+    {
+        totalPassageiros++;
+    }
+
+    fclose(arquivo);
+
+    if (totalPassageiros >= MAX_FILA_ESPERA)
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+void cadastrarPassageiro(const char *nomeVoo, Passageiro *passageiro)
+{
+    char nomeArquivo[20];
+    sprintf(nomeArquivo, "%s.txt", nomeVoo);
+
+    FILE *arquivo = fopen(nomeArquivo, "a");
+    if (arquivo == NULL)
+    {
+        printf("Voo nao existe.\n");
+        return;
+    }
+
+    if (verificarEspacoPassageiros(nomeVoo))
+    {
+        fprintf(arquivo, "%s;%s;%s;%s;%d;%d\n", passageiro->cpf, passageiro->nome, passageiro->endereco, passageiro->telefone, passageiro->numPassagem, passageiro->numPoltrona);
+        printf("Passageiro cadastrado com sucesso no voo %s.\n", nomeVoo);
+    }
+    else if (verificarEspacoFilaEspera(nomeVoo))
+    {
+        char nomeArquivoFila[20];
+        sprintf(nomeArquivoFila, "fila_%s.txt", nomeVoo);
+
+        FILE *arquivoFila = fopen(nomeArquivoFila, "a");
+        if (arquivoFila == NULL)
+        {
+            printf("Erro ao acessar a fila de espera.\n");
+            fclose(arquivo);
+            return;
+        }
+
+        fprintf(arquivoFila, "%s;%s;%s;%s;%d;%d\n", passageiro->cpf, passageiro->nome, passageiro->endereco, passageiro->telefone, passageiro->numPassagem, passageiro->numPoltrona);
+        printf("Passageiro adicionado na fila de espera do voo %s.\n", nomeVoo);
+
+        fclose(arquivoFila);
+    }
+    else
+    {
+        printf("Fila cheia, a reserva nao pode ser feita.\n");
+    }
+
+    fclose(arquivo);
+}
+
+// Remove um passageiro de um voo ou da lista de espera
+void removerPassageiro(char *nomeVoo, char *cpf)
+{
+    char nomeArquivo[100];
+    char nomeArquivoTemp[100];
+    char nomeArquivoFila[100];
+    FILE *arquivo, *arquivoTemp, *arquivoFila;
+    char linha[100], cpfLinha[100];
+
+    sprintf(nomeArquivo, "%s.txt", nomeVoo);
+    sprintf(nomeArquivoTemp, "temp_%s.txt", nomeVoo);
+    sprintf(nomeArquivoFila, "fila_%s.txt", nomeVoo);
+
+    int resultado = 0;
+
+    arquivo = fopen(nomeArquivo, "r");
+    if (arquivo == NULL)
+    {
+        printf("Voo nao encontrado\n");
+        return;
+    }
+
+    arquivoTemp = fopen(nomeArquivoTemp, "w");
+    if (arquivoTemp == NULL)
+    {
+        printf("Erro ao remover\n");
+        return;
+    }
+
+    // Procura no voo
+    while (fgets(linha, 100, arquivo) != NULL)
+    {
+        sscanf(linha, "%100[^;]s", cpfLinha);
+        if (strcmp(cpfLinha, cpf) != 0)
+        {
+            fprintf(arquivoTemp, "%s", linha);
+        }
+        else
+        {
+            resultado = 1;
+        }
+    }
+
+    fclose(arquivo);
+    fclose(arquivoTemp);
+
+    // Substitui o voo pelo voo sem o passageiro encontrado
+    if (remove(nomeArquivo) != 0 || rename(nomeArquivoTemp, nomeArquivo) != 0)
+    {
+        printf("Erro ao remover\n");
+        return;
+    }
+
+    if (resultado == 1)
+    {
+        printf("Passageiro removido com sucesso\n");
+        // Adiciona proximo passageiro da fila de espera
+        arquivoFila = fopen(nomeArquivoFila, "r");
+        arquivoTemp = fopen(nomeArquivoTemp, "w");
+        arquivo = fopen(nomeArquivo, "a");
+
+        if (arquivoFila == NULL || arquivoTemp == NULL || arquivo == NULL)
+        {
+            printf("Erro ao adicionar proximo passageiro\n");
+            return;
+        }
+
+        // Adiciona proximo passageiro da fila de espera ao voo
+        if (fgets(linha, 100, arquivoFila) != NULL)
+        {
+            fprintf(arquivo, "%s", linha);
+            printf("Proximo passageiro adicionado ao voo\n");
+        }
+
+        // Copia o restante da fila de espera para o arquivo temporario
+        while (fgets(linha, 100, arquivoFila) != NULL)
+        {
+            fprintf(arquivoTemp, "%s", linha);
+        }
+
+        fclose(arquivoFila);
+        fclose(arquivoTemp);
+        fclose(arquivo);
+
+        // Substitui a fila de espera pela fila sem o passageiro adicionado
+        if (remove(nomeArquivoFila) != 0 || rename(nomeArquivoTemp, nomeArquivoFila) != 0)
+        {
+            printf("Erro ao remover passageiro da fila de espera\n");
+            return;
+        }
+
+        return;
+    }
+
+    // Procura na fila de espera
+    printf("Passageiro nao esta no voo\n");
+    printf("Removendo da fila de espera\n");
+
+    arquivoFila = fopen(nomeArquivoFila, "r");
+    arquivoTemp = fopen(nomeArquivoTemp, "w");
+    if (arquivoFila == NULL || arquivoTemp == NULL)
+    {
+        printf("Erro ao remover da fila de espera\n");
+        return;
+    }
+
+    // Procura na fila de espera
+    while (fgets(linha, 100, arquivoFila) != NULL)
+    {
+        sscanf(linha, "%100[^;]s", cpfLinha);
+        if (strcmp(cpfLinha, cpf) != 0)
+        {
+            fprintf(arquivoTemp, "%s", linha);
+        }
+        else
+        {
+            resultado = 1;
+        }
+    }
+
+    fclose(arquivoFila);
+    fclose(arquivoTemp);
+
+    // Substitui a fila de espera pela fila sem o passageiro encontrado
+    if (remove(nomeArquivoFila) != 0 || rename(nomeArquivoTemp, nomeArquivoFila) != 0)
+    {
+        printf("Erro ao remover da fila de espera\n");
+        return;
+    }
+
+    if (resultado == 1)
+    {
+        printf("Passageiro removido com sucesso\n");
+        return;
+    }
+    else
+    {
+        printf("Passageiro nao encontrado na fila de espera.\n");
+        return;
+    }
+}
+
+void mostrarFilaEspera(const char *nomeVoo)
+{
+    char nomeArquivoFila[20];
+    sprintf(nomeArquivoFila, "fila_%s.txt", nomeVoo);
+
+    FILE *arquivoFila = fopen(nomeArquivoFila, "r");
+    if (arquivoFila == NULL)
+    {
+        printf("Voo nao existe.\n");
+        return;
+    }
+
+    char linha[200];
+
+    printf("\n----- Fila de Espera do Voo %s -----\n", nomeVoo);
+
+
+    while (fgets(linha, sizeof(linha), arquivoFila) != NULL)
+    {
+        printf("\n\nCPF: %s\n", strtok(linha, ";"));
+        printf("Nome: %s\n", strtok(NULL, ";"));
+        printf("Endereco: %s\n", strtok(NULL, ";"));
+        printf("Telefone: %s\n", strtok(NULL, ";"));
+        printf("Numero da Passagem: %s\n", strtok(NULL, ";"));
+        printf("Numero da Poltrona: %s\n", strtok(NULL, ";"));
+    }
+
+    fclose(arquivoFila);
+}
+
+void carregarPassageiros(const char *nomeVoo, Passageiro listaPassageiros[], int *numPassageiros)
+{
+    char nomeArquivo[20];
+    sprintf(nomeArquivo, "%s.txt", nomeVoo);
+
+    FILE *arquivo = fopen(nomeArquivo, "r");
+    if (arquivo == NULL)
+    {
+        *numPassageiros = 0;
+        return;
+    }
+
+    char linha[200];
+
+    *numPassageiros = 0;
+    while (fgets(linha, sizeof(linha), arquivo) != NULL)
+    {
+        if (*numPassageiros >= MAX_PASSAGEIROS)
+        {
+            break;
+        }
+
+        char *token = strtok(linha, ";");
+        strcpy(listaPassageiros[*numPassageiros].cpf, token);
+        token = strtok(NULL, ";");
+        strcpy(listaPassageiros[*numPassageiros].nome, token);
+        token = strtok(NULL, ";");
+        strcpy(listaPassageiros[*numPassageiros].endereco, token);
+        token = strtok(NULL, ";");
+        strcpy(listaPassageiros[*numPassageiros].telefone, token);
+        token = strtok(NULL, ";");
+        listaPassageiros[*numPassageiros].numPassagem = atoi(token);
+        token = strtok(NULL, ";");
+        listaPassageiros[*numPassageiros].numPoltrona = atoi(token);
+
+        (*numPassageiros)++;
+    }
+
+    fclose(arquivo);
+}
+
+int main()
+{
+    int opcaoVoo;
+    char nomeVoo[15];
+    Passageiro listaPassageiros[MAX_PASSAGEIROS];
+    int numPassageiros;
+    carregarPassageiros(nomeVoo, listaPassageiros, &numPassageiros);
+
+    printf("Escolha uma opcao de voo:\n");
+    printf("1. BH-RIO\n");
+    printf("2. BH-SP\n");
+    printf("3. BH-BRASILIA\n");
+    printf("Opcao: ");
+    scanf("%d", &opcaoVoo);
+
+    switch (opcaoVoo)
+    {
+    case 1:
+        strcpy(nomeVoo, "BH-RIO");
+        break;
+    case 2:
+        strcpy(nomeVoo, "BH-SP");
+        break;
+    case 3:
+        strcpy(nomeVoo, "BH-BRASILIA");
+        break;
+    default:
+        printf("Opcao invalida.\n");
+        return 0;
+    }
+
+    while (1)
+    {
+        exibirMenuVoo(nomeVoo);
+
+        int opcao;
+        scanf("%d", &opcao);
+
+        if (opcao == 9)
+        {
+            break;
+        }
+
+        switch (opcao)
+        {
+        case 1:
+            mostrarListaPassageiros(nomeVoo, opcaoVoo);
+            break;
+        case 2:
+        {
+            char cpf[12];
+            printf("Digite o CPF: ");
+            scanf("%s", cpf);
+            pesquisarPassageiroCPF(nomeVoo, cpf);
+            break;
+        }
+        case 3:
+        {
+            char nome[50];
+            printf("Digite o Nome: ");
+            scanf(" %[^\n]s", nome);
+            pesquisarPassageiroNome(nomeVoo, nome);
+            break;
+        }
+        case 4:
+        {
+            Passageiro passageiro;
+            printf("CPF: ");
+            scanf("%s", passageiro.cpf);
+            printf("Nome: ");
+            scanf(" %[^\n]s", passageiro.nome);
+            printf("Endereco: ");
+            scanf(" %[^\n]s", passageiro.endereco);
+            printf("Telefone: ");
+            scanf("%s", passageiro.telefone);
+            printf("Numero da Passagem: ");
+            scanf("%d", &passageiro.numPassagem);
+            printf("Numero da Poltrona: ");
+            scanf("%d", &passageiro.numPoltrona);
+
+            cadastrarPassageiro(nomeVoo, &passageiro);
+            break;
+        }
+        case 5:
+        {
+            char cpf[12];
+            printf("Digite o CPF: ");
+            scanf("%s", cpf);
+            removerPassageiro(nomeVoo, cpf);
+            break;
+        }
+        case 6:
+            mostrarFilaEspera(nomeVoo);
+            break;
+        default:
+            printf("Opcao invalida.\n");
+            break;
+        }
+    }
+
+    return 0;
+}
