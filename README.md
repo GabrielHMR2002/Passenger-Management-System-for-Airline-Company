@@ -1,80 +1,79 @@
-# Sistema-de-Gerenciamento-de-Passageiros-para-Empresa-Aérea
+# Airline-Passenger-Management-System
 
-# Linguagem utilizada: C
+# Language Used: C
 
-# Documentação do Projeto: Sistema de Gerenciamento de Passageiros para Empresa Aérea - Queda Livre
+# Project Documentation: Airline Passenger Management System - Free Fall
 
-## Visão Geral
+## Overview
 
-Este projeto implementa um sistema de gerenciamento de passageiros para uma fictícia empresa aérea chamada "Queda Livre". O sistema permite o cadastro, pesquisa, remoção e exibição de informações sobre passageiros, além de oferecer suporte para uma fila de espera.
+This project implements a passenger management system for a fictional airline named "Free Fall." The system allows the registration, search, removal, and display of passenger information, along with support for a waiting list.
 
-## Funcionalidades Principais
+## Key Features
 
-### 1. Escolha de Voo
+### 1. Flight Selection
 
-Ao iniciar o programa, o usuário é apresentado a um menu que oferece opções de voos disponíveis:
+Upon starting the program, the user is presented with a menu offering options for available flights:
 
-- BH-RIO (Opção 1)
-- BH-SP (Opção 2)
-- BH-BRASILIA (Opção 3)
+- BH-RIO (Option 1)
+- BH-SP (Option 2)
+- BH-BRASILIA (Option 3)
 
-O usuário seleciona o voo desejado e, a partir desse ponto, todas as operações são realizadas para o voo escolhido.
+The user selects the desired flight, and from that point onward, all operations are performed for the chosen flight.
 
-### 2. Menu de Operações
+### 2. Operation Menu
 
-Após a escolha do voo, o sistema exibe um menu com as seguintes opções:
+After selecting the flight, the system displays a menu with the following options:
 
-1. **Mostrar Lista de Passageiros:** Exibe a lista de passageiros cadastrados para o voo.
-2. **Pesquisar Passageiro por CPF:** Permite a pesquisa de um passageiro por CPF.
-3. **Pesquisar Passageiro por Nome:** Permite a pesquisa de um passageiro por nome.
-4. **Cadastrar Passageiro:** Adiciona um novo passageiro ao voo.
-5. **Excluir Passageiro da Lista:** Remove um passageiro do voo.
-6. **Mostrar Fila de Espera:** Exibe a lista de passageiros em espera para o voo.
-9. **Sair:** Encerra o programa.
+1. **Show Passenger List:** Displays the list of registered passengers for the chosen flight.
+2. **Search Passenger by CPF:** Allows searching for a passenger by CPF.
+3. **Search Passenger by Name:** Allows searching for a passenger by name.
+4. **Register Passenger:** Adds a new passenger to the flight.
+5. **Remove Passenger from List:** Removes a passenger from the flight.
+6. **Show Waiting List:** Displays the list of passengers on the waiting list for the flight.
+9. **Exit:** Closes the program.
 
-### 3. Operações com Passageiros
+### 3. Passenger Operations
 
-#### 3.1. Mostrar Lista de Passageiros
+#### 3.1. Show Passenger List
 
-- Exibe as informações de todos os passageiros cadastrados para o voo selecionado.
-- Inclui detalhes como CPF, nome, endereço, telefone, número da passagem e número da poltrona.
-- Se o voo não existir, uma mensagem adequada é exibida.
+- Displays information for all passengers registered for the selected flight.
+- Includes details such as CPF, name, address, telephone, ticket number, and seat number.
+- If the flight does not exist, an appropriate message is displayed.
 
-#### 3.2. Pesquisar Passageiro por CPF
+#### 3.2. Search Passenger by CPF
 
-- Permite a pesquisa de um passageiro por CPF.
-- Exibe as informações do passageiro se encontrado, indicando CPF, nome, endereço, telefone, número da passagem e número da poltrona.
-- Caso o passageiro não seja encontrado no voo, a pesquisa é estendida para a fila de espera.
+- Allows searching for a passenger by CPF.
+- Displays the passenger's information if found, indicating CPF, name, address, telephone, ticket number, and seat number.
+- If the passenger is not found on the flight, the search is extended to the waiting list.
 
-#### 3.3. Pesquisar Passageiro por Nome
+#### 3.3. Search Passenger by Name
 
-- Permite a pesquisa de um passageiro por nome.
-- Exibe as informações do passageiro se encontrado, indicando CPF, nome, endereço, telefone, número da passagem e número da poltrona.
-- Caso o passageiro não seja encontrado no voo, a pesquisa é estendida para a fila de espera.
+- Allows searching for a passenger by name.
+- Displays the passenger's information if found, indicating CPF, name, address, telephone, ticket number, and seat number.
+- If the passenger is not found on the flight, the search is extended to the waiting list.
 
-#### 3.4. Cadastrar Passageiro
+#### 3.4. Register Passenger
 
-- Solicita informações do novo passageiro, como CPF, nome, endereço, telefone, número da passagem e número da poltrona.
-- Verifica se há espaço no voo para cadastrar o passageiro. Se não houver, o passageiro é adicionado à fila de espera.
-- Se a fila de espera também estiver cheia, o cadastro não é permitido.
+- Requests information for the new passenger, such as CPF, name, address, telephone, ticket number, and seat number.
+- Checks if there is space on the flight to register the passenger. If not, the passenger is added to the waiting list.
+- If the waiting list is also full, registration is not allowed.
 
-#### 3.5. Excluir Passageiro da Lista
+#### 3.5. Remove Passenger from List
 
-- Remove um passageiro do voo, liberando espaço para outros passageiros.
-- Se o passageiro removido estiver na fila de espera, o próximo passageiro da fila é automaticamente movido para o voo.
+- Removes a passenger from the flight, freeing up space for other passengers.
+- If the removed passenger is in the waiting list, the next passenger in the queue is automatically moved to the flight.
 
-#### 3.6. Mostrar Fila de Espera
+#### 3.6. Show Waiting List
 
-- Exibe a lista de passageiros em espera para o voo selecionado.
-- Apresenta as informações de CPF, nome, endereço, telefone, número da passagem e número da poltrona.
+- Displays the list of passengers on the waiting list for the selected flight.
+- Presents information such as CPF, name, address, telephone, ticket number, and seat number.
 
-### 4. Controle de Espaço
+### 4. Space Control
 
-- O sistema verifica a capacidade máxima de passageiros para um voo (`MAX_PASSAGEIROS`) e impede o cadastro caso o limite seja atingido.
-- Uma fila de espera é implementada para acomodar passageiros quando o voo está lotado.
+- The system checks the maximum passenger capacity for a flight (`MAX_PASSAGEIROS`) and prevents registration if the limit is reached.
+- A waiting list is implemented to accommodate passengers when the flight is full.
 
-### 5. Persistência de Dados
+### 5. Data Persistence
 
-- As informações dos passageiros e da fila de espera são armazenadas em arquivos de texto específicos para cada voo.
-- Os arquivos seguem o formato `<nomeVoo>.txt` para os passageiros e `fila_<nomeVoo>.txt` para a fila de espera.
-
+- Passenger and waiting list information is stored in specific text files for each flight.
+- The files follow the format `<flightName>.txt` for passengers and `waiting_list_<flightName>.txt` for the waiting list.
