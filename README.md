@@ -1,6 +1,6 @@
 # Airline-Passenger-Management-System
 
-# Language Used C
+# Language Used: C
 
 # Project Documentation: Airline Passenger Management System - Free Fall
 
