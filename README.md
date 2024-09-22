@@ -1,7 +1,5 @@
 # Airline-Passenger-Management-System
 
-Gabriel
-Livia
 
 # Language Used: C
 
